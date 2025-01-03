@@ -1,5 +1,5 @@
 import { Context, HotReloader } from "@rbxts/rewire";
-import { Plugin, Scheduler, SystemFn, SystemInfo } from "./types";
+import { Plugin, Scheduler, SystemFn } from "./types";
 
 
 interface ModuleInfo {

@@ -1,5 +1,5 @@
 
-export type SystemInfo<T extends unknown[]> = {
+type SystemInfo<T extends unknown[]> = {
     readonly system: SystemFn<T>;
     readonly phase: Phase;
     readonly name: string;
@@ -7,7 +7,7 @@ export type SystemInfo<T extends unknown[]> = {
 }
 
 
-export interface Hooks {
+interface Hooks {
     readonly Hooks: {
         readonly SystemAdd: "SystemAdd";
         readonly SystemRemove: "SystemRemove";
@@ -64,24 +64,24 @@ type HookFunctionMap<T extends unknown[] = unknown[]> = {
 // Utility type to get the correct function type based on the hook name
 type HookFunctionArgs<K extends keyof HookFunctionMap, T extends unknown[]> = HookFunctionMap<T>[K];
 
-export type SystemFn<T extends unknown[]> = ((...args: T) => unknown[]) | ((...args: T) => void);
+type SystemFn<T extends unknown[]> = ((...args: T) => unknown[]) | ((...args: T) => void);
 
-export interface SystemTable<T extends unknown[]> {
+interface SystemTable<T extends unknown[]> {
     readonly system: SystemFn<T>;
     readonly phase?: Phase
     readonly [key: string]: unknown
 }
 
-export type System<T extends unknown[]> = SystemFn<T> | SystemTable<T>;
+type System<T extends unknown[]> = SystemFn<T> | SystemTable<T>;
 
-export interface EventLike {
+interface EventLike {
     connect(callback: (...args: unknown[]) => void): void;
     Connect(callback: (...args: unknown[]) => void): void;
     on(callback: (...args: unknown[]) => void): void;
     On(callback: (...args: unknown[]) => void): void;
 }
 
-export type EventInstance = Instance | EventLike;
+type EventInstance = Instance | EventLike;
 
 declare class Phase {
     constructor(debugName?: string)
@@ -107,20 +107,11 @@ declare class Pipeline {
     static readonly Startup: Pipeline
 }
 
-export interface Utils {
-    getSystem: <T extends unknown[]>(system: System<T>) => SystemFn<T> | undefined   
-    getSystemName: <T extends unknown[]>(system: SystemFn<T>) => string
-    isPhase: (phase: Phase) => Phase | undefined
-    isPipeline: (pipeline: Pipeline) => Pipeline | undefined
-    getEventIdentifier: (instance: EventInstance, event?: EventLike) => string
-    isValidEvent: (instance: EventInstance, event?: EventLike) => boolean
-}
-
-export interface Plugin {
+interface Plugin {
     build<T extends unknown[]>(schedular: Scheduler<T>): void
 }
 
-declare class Scheduler<T extends unknown[]> {
+export declare class Scheduler<T extends unknown[]> {
     Hooks: Hooks["Hooks"]
     insertAfter(phase: Phase, after: Phase | Pipeline): Scheduler<T>
     insertAfter(pipeline: Pipeline, after: Phase | Pipeline): Scheduler<T>
