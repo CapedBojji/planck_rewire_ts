@@ -1,0 +1,56 @@
+{
+  "name": "@rbxts/planck-rewire",
+  "version": "0.1.0-rc.1",
+  "description": "A hot-reload plugin for @rbxts/planck",
+  "main": "out/init.lua",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w",
+    "prepublishOnly": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yetanotherclown/planck"
+  },
+  "homepage": "https://yetanotherclown.github.io/planck",
+  "keywords": [
+    "ECS",
+    "Entity Component System",
+    "Scheduler",
+    "@rbxts",
+    "Roblox",
+    "Roblox-TS",
+    "roblox ts",
+    "roblox-ts",
+    "@rbxts/planck"
+  ],
+  "author": "YetAnotherClown",
+  "license": "MIT",
+  "types": "out/index.d.ts",
+  "files": [
+    "out",
+    "!**/*.tsbuildinfo",
+    "!out/__tests__",
+    "!out/__tests__/**/*",
+    "!out/jest.config.luau"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@rbxts/compiler-types": "3.0.0-types.0",
+    "@rbxts/types": "^1.0.813",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-roblox-ts": "^0.0.36",
+    "prettier": "^3.4.2",
+    "roblox-ts": "^3.0.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@rbxts/rewire": "^0.3.0"
+  }
+}
