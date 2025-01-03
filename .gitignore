@@ -5,3 +5,6 @@
 .devenv
 .devenv
 results/
+**/*.tgz
+**/*.tar.gz
+**/*.zip
