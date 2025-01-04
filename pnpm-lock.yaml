@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@rbxts/planck':
+        specifier: github:CapedBojji/planck_ts
+        version: https://codeload.github.com/CapedBojji/planck_ts/tar.gz/ec1d9e51698938bdd642847778419ca3c993fb25
       '@rbxts/rewire':
         specifier: ^0.3.0
         version: 0.3.0
@@ -120,6 +123,10 @@ packages:
 
   '@rbxts/compiler-types@3.0.0-types.0':
     resolution: {integrity: sha512-VGOHJPoL7+56NTatMGqQj3K7xWuzEV+aP4QD5vZiHu+bcff3kiTmtoadaF6NkJrmwfFAvbsd4Dg764ZjWNceag==}
+
+  '@rbxts/planck@https://codeload.github.com/CapedBojji/planck_ts/tar.gz/ec1d9e51698938bdd642847778419ca3c993fb25':
+    resolution: {tarball: https://codeload.github.com/CapedBojji/planck_ts/tar.gz/ec1d9e51698938bdd642847778419ca3c993fb25}
+    version: 0.1.0-rc.1
 
   '@rbxts/rewire@0.3.0':
     resolution: {integrity: sha512-wChhGZ3kEkEsMK9ZuwKpwRsC7OGVZlvxrYMR3beFgCIPXE58JKLziBLkDACmd709XCCEmsMAqv9HMCMhSTD08Q==}
@@ -873,6 +880,8 @@ snapshots:
   '@pkgr/core@0.1.1': {}
 
   '@rbxts/compiler-types@3.0.0-types.0': {}
+
+  '@rbxts/planck@https://codeload.github.com/CapedBojji/planck_ts/tar.gz/ec1d9e51698938bdd642847778419ca3c993fb25': {}
 
   '@rbxts/rewire@0.3.0': {}
 
