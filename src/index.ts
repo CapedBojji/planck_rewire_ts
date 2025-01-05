@@ -1,6 +1,5 @@
+import { Plugin, Scheduler, SystemFn } from "@rbxts/planck/out/types";
 import { Context, HotReloader } from "@rbxts/rewire";
-import { Plugin, Scheduler, SystemFn } from "./types";
-
 
 interface ModuleInfo {
 	nameToSystem: Map<string, SystemFn<unknown[]>>;
