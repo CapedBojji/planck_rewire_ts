@@ -1,4 +1,4 @@
-import { Plugin, Scheduler, SystemFn } from "@rbxts/planck/out/types";
+import { Plugin, Scheduler, SystemFn, SystemInfo } from "@rbxts/planck/out/types";
 import { Context, HotReloader } from "@rbxts/rewire";
 
 interface ModuleInfo {
@@ -8,96 +8,100 @@ interface ModuleInfo {
 
 class PlanckRewirePlugin implements Plugin {
 	private readonly folders: Folder[];
-	private readonly moduleToInfo: Map<ModuleScript, ModuleInfo>;
-	private currentModule: { old: ModuleScript, new: ModuleScript } | undefined;
+	private moduleToSystem: Map<ModuleScript, Array<SystemInfo<unknown[]>>> = new Map();
+	private context: { originalModule: ModuleScript, isReloading: boolean, newSystems: Array<SystemInfo<unknown[]>> } | undefined;
 	private readonly hotReloader = new HotReloader();
+	private schedular: Scheduler<unknown[]> | undefined;
 
 	constructor(folders: Folder[]) {
 		this.folders = folders;
-		this.moduleToInfo = new Map();
+		this.moduleToSystem = new Map();
+	}
+
+
+	private reloadSystem(system: SystemInfo<unknown[]>) {
+		assert(this.context !== undefined, "Cannot reload a system outside of a reloading context");
+
+		const systemFn = system.system;
+		const name = system.name;
+		const oldSystem = this.getSystemByName(name);
+		if (oldSystem === undefined) {
+			// This is a new system
+			this.context.newSystems.push(system);
+		}
+		if (oldSystem !== undefined) {
+			// This is an existing system
+			this.schedular?.removeSystem(system.system)
+			this.schedular?.replaceSystem(oldSystem.system, system.system);
+			this.context.newSystems.push(system);
+			this.unmarkForCleanup(oldSystem)
+		}
+	}
+
+	private unmarkForCleanup(system: SystemInfo<unknown[]>) {
+		assert(this.context !== undefined, "Cannot unmark a system for cleanup outside of a reloading context");
+
+		const module = this.context.originalModule;
+		const systems = this.moduleToSystem.get(module);
+		if (systems === undefined) {
+			return;
+		}
+		this.moduleToSystem.set(module, systems.filter(s => s !== system));
 	}
 
 	private cleanupModule(module: ModuleScript) {
-		const moduleInfo = this.moduleToInfo.get(module);
-		if (moduleInfo === undefined) return;
-		moduleInfo.nameToSystem.forEach((system, name) => {
-			// Remove the system
-			this.moduleToInfo.forEach((moduleInfo) => {
-				if (moduleInfo.systemToName.has(system)) {
-					moduleInfo.systemToName.delete(system);
-					moduleInfo.nameToSystem.delete(name);
-				}
-			})
+		const systems = this.moduleToSystem.get(module);
+		if (systems === undefined) {
+			return;
+		}
+		systems.forEach(system => {
+			this.schedular?.removeSystem(system.system);
 		})
 	}
 
+	private getSystemByName(name: string): SystemInfo<unknown[]> | undefined {
+		// Ensure we are in a reloading context
+		if (this.context === undefined) {
+			return undefined;
+		}
+		// Find the system in the original module
+		const og = this.context.originalModule
+		const systems = this.moduleToSystem.get(og);
+		if (systems === undefined) {
+			return undefined;
+		}
+
+		const system = systems.find(system => system.name === name);
+		return system;
+	}
 
 	build(schedular: Scheduler<unknown[]>): void {
+		this.schedular = schedular;
+		
 		schedular._addHook(schedular.Hooks.SystemAdd, (info) => {
-			if (this.currentModule === undefined) {
+			if (this.context === undefined) {
 				return;
 			}
-			const systemInfo = info.system;
-			const currentSystemName = systemInfo.name;
-			const isReloading = this.currentModule.old !== this.currentModule.new;
-			if (isReloading) {
-				const oldModuleInfo = this.moduleToInfo.get(this.currentModule.old);
-				assert(oldModuleInfo !== undefined, "Old module info is undefined"); // This should never happen
-				// Check if the new system is in the old module
-				// If it is	, remove the old system
-				if (oldModuleInfo.nameToSystem.has(currentSystemName)) {
-					const oldSystem = oldModuleInfo.nameToSystem.get(currentSystemName)!;
-					schedular.removeSystem(oldSystem);
-				}
+			if (this.context.isReloading) {
+				this.reloadSystem(info.system);
 			}
-			// Add the system to the module
-			if (!this.moduleToInfo.has(this.currentModule.new)) {
-				const nameToSystem = new Map<string, SystemFn<unknown[]>>();
-				const systemToName = new Map<SystemFn<unknown[]>, string>();
-				nameToSystem.set(systemInfo.name, systemInfo.system);
-				systemToName.set(systemInfo.system, systemInfo.name);
-				this.moduleToInfo.set(this.currentModule.new, { nameToSystem, systemToName });
+			if (!this.context.isReloading) {
+				this.context.newSystems.push(info.system);
 			}
-		})
-		schedular._addHook(schedular.Hooks.SystemRemove, (info) => {
-			const systemInfo = info.system;
-			// Find the module that the system is in
-			this.moduleToInfo.forEach((moduleInfo, module) => {
-				if (moduleInfo.systemToName.has(systemInfo.system)) {
-					// Update the maps
-					moduleInfo.systemToName.delete(systemInfo.system);
-					moduleInfo.nameToSystem.delete(systemInfo.name);
-				}
-			})
-		})
-		schedular._addHook(schedular.Hooks.SystemReplace, (info) => {
-			const [oldSystemInfo, newSystemInfo] = [info.old, info.new];
-			// Find the module that the old system is in
-			this.moduleToInfo.forEach((moduleInfo, module) => {
-				if (moduleInfo.systemToName.has(oldSystemInfo.system)) {
-					const oldName = oldSystemInfo.name;
-					const newName = newSystemInfo.name;
-					// Delete the old system
-					moduleInfo.systemToName.delete(oldSystemInfo.system);
-					moduleInfo.nameToSystem.delete(oldName);
-					// Add the new system with the old name
-					moduleInfo.systemToName.set(newSystemInfo.system, newName);
-					moduleInfo.nameToSystem.set(newName, newSystemInfo.system);
-				}
-			})
 		})
 		// Load all the modules
 		this.folders.forEach(folder => {
 			this.hotReloader.scan(folder, (module: ModuleScript, context: Context) => {
 				// Set the current module
-				this.currentModule = { old: context.originalModule, new: module };
+				this.context = { originalModule: context.originalModule, newSystems: new Array(), isReloading: context.isReloading };
 				pcall(() => { require(module) });
-				this.currentModule = undefined;
-				if (context.isReloading)
-					this.cleanupModule(context.originalModule);
+				this.cleanupModule(module);
+				this.moduleToSystem.set(context.originalModule, this.context.newSystems);
+				this.context = undefined;
 			}, (module: ModuleScript, context: Context) => {
 				if (context.isReloading) return;
 				this.cleanupModule(module);
+				this.moduleToSystem.delete(context.originalModule);
 			})
 		})
 	}
