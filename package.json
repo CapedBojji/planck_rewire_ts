@@ -32,7 +32,8 @@
     "!**/*.tsbuildinfo",
     "!out/__tests__",
     "!out/__tests__/**/*",
-    "!out/jest.config.luau"
+    "!out/jest.config.luau",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
