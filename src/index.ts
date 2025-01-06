@@ -77,7 +77,7 @@ class PlanckRewirePlugin implements Plugin {
 
 	build(schedular: Scheduler<unknown[]>): void {
 		this.schedular = schedular;
-		
+
 		schedular._addHook(schedular.Hooks.SystemAdd, (info) => {
 			if (this.context === undefined) {
 				return;
@@ -100,7 +100,7 @@ class PlanckRewirePlugin implements Plugin {
 				this.context = undefined;
 			}, (module: ModuleScript, context: Context) => {
 				if (context.isReloading) return;
-				this.cleanupModule(module);
+				this.cleanupModule(context.originalModule);
 				this.moduleToSystem.delete(context.originalModule);
 			})
 		})
