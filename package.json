@@ -52,7 +52,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@rbxts/planck": "0.1.0-rc.3",
+    "@rbxts/planck": "^0.1.2",
     "@rbxts/rewire": "^0.3.0"
   }
 }
