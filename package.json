@@ -1,6 +1,6 @@
 {
   "name": "@rbxts/planck-rewire",
-  "version": "0.1.1",
+  "version": "0.1.2-rc.0",
   "description": "A hot-reload plugin for @rbxts/planck",
   "main": "out/init.lua",
   "scripts": {
@@ -52,7 +52,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@rbxts/planck": "^0.1.2",
+    "@rbxts/planck": "0.1.3-rc.0",
     "@rbxts/rewire": "^0.3.0"
   }
 }

@@ -1,4 +1,5 @@
-import { Plugin, Scheduler, SystemFn, SystemInfo } from "@rbxts/planck/out/types";
+import Scheduler from "@rbxts/planck/out/Scheduler";
+import { Plugin, SystemFn, SystemInfo } from "@rbxts/planck/out/types";
 import { Context, HotReloader } from "@rbxts/rewire";
 
 interface ModuleInfo {
@@ -22,7 +23,6 @@ class PlanckRewirePlugin implements Plugin {
 	private reloadSystem(system: SystemInfo<unknown[]>) {
 		assert(this.context !== undefined, "Cannot reload a system outside of a reloading context");
 
-		const systemFn = system.system;
 		const name = system.name;
 		const oldSystem = this.getSystemByName(name);
 		if (oldSystem === undefined) {

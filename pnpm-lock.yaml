@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@rbxts/planck':
-        specifier: 0.1.0-rc.3
-        version: 0.1.0-rc.3
+        specifier: 0.1.3-rc.0
+        version: 0.1.3-rc.0
       '@rbxts/rewire':
         specifier: ^0.3.0
         version: 0.3.0
@@ -124,8 +124,8 @@ packages:
   '@rbxts/compiler-types@3.0.0-types.0':
     resolution: {integrity: sha512-VGOHJPoL7+56NTatMGqQj3K7xWuzEV+aP4QD5vZiHu+bcff3kiTmtoadaF6NkJrmwfFAvbsd4Dg764ZjWNceag==}
 
-  '@rbxts/planck@0.1.0-rc.3':
-    resolution: {integrity: sha512-PRot95uPDOzGwGrqh6WFeq5CMBos+7hHtH/STYJRa+k8HK4K4Yj/2Ck0X8VXpA0gYJ4corMAMUlvXnk8qTa2Rg==}
+  '@rbxts/planck@0.1.3-rc.0':
+    resolution: {integrity: sha512-eakuCqoD48Er0vjrvzaRSfz0IpprVCwjYoOZMG0NKvazdYo33NbGaI4DVn83bE6I460YhT0LfERqJqXRZ4pjGg==}
 
   '@rbxts/rewire@0.3.0':
     resolution: {integrity: sha512-wChhGZ3kEkEsMK9ZuwKpwRsC7OGVZlvxrYMR3beFgCIPXE58JKLziBLkDACmd709XCCEmsMAqv9HMCMhSTD08Q==}
@@ -880,7 +880,7 @@ snapshots:
 
   '@rbxts/compiler-types@3.0.0-types.0': {}
 
-  '@rbxts/planck@0.1.0-rc.3': {}
+  '@rbxts/planck@0.1.3-rc.0': {}
 
   '@rbxts/rewire@0.3.0': {}
 
